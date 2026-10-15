@@ -48,9 +48,6 @@ LOG_FILE = get_path(
 )
 os.makedirs(os.path.dirname(LOG_FILE) or ".", exist_ok=True)
 
-log_file = open(LOG_FILE, "a", encoding="utf-8", buffering=1)
-sys.stdout = log_file
-
 MAX_PAGES = int(os.getenv("MAX_PAGES", "5"))
 TOP_N = int(os.getenv("TOP_N", "5"))
 MIN_SOLD = int(os.getenv("MIN_SOLD", "10"))
