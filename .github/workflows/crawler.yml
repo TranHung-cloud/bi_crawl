@@ -26,7 +26,9 @@ jobs:
           python -m playwright install --with-deps chromium
 
       - name: Run crawler
-        run: python crawl_product_by_date.py
+        run: |
+          mkdir -p log
+          python -u crawl_product_by_date.py 2>&1 | tee log/app.log
 
       - name: Commit updated CSV
         run: |
