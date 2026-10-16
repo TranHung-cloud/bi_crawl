@@ -401,10 +401,8 @@ def main():
             crawl_date,
         )
         found_ids &= all_ids
-        idle_rounds = 0
 
-        while ((found_ids != all_ids) and (idle_rounds < MAX_IDLE_ROUNDS)):
-            max_pages = MAX_PAGES + idle_rounds*2
+        while (True):
             context = None
             captcha_detected = False
             previous_found_count = len(found_ids)
@@ -453,7 +451,7 @@ def main():
                         page,
                         keyword,
                         remaining_ids,
-                        max_pages,
+                        MAX_PAGES,
                     )
 
                     if challenge:
@@ -525,7 +523,7 @@ def main():
                         page,
                         item_id,
                         {item_id},
-                        max_pages,
+                        MAX_PAGES,
                     )
 
                     if challenge:
@@ -563,15 +561,7 @@ def main():
                     )
                 if captcha_detected:
                     continue
-                if len(found_ids) > previous_found_count:
-                    idle_rounds = 0
-                    print("[MAIN] Tìm thấy sản phẩm mới. Reset số vòng không có kết quả.")
-                else:
-                    idle_rounds += 1
-                    print(
-                        f"[MAIN] Không tìm thấy sản phẩm mới. "
-                        f"Vòng không có kết quả: {idle_rounds}/{MAX_IDLE_ROUNDS}"
-                    )
+                break
             except Exception as e:
                 print(f"[BROWSER] Lỗi: {e}")
 
@@ -582,7 +572,10 @@ def main():
                     print(f"[CSV] Lỗi lưu lịch sử: {e}")
 
                 if context is not None:
-                    context.close()
+                    try:
+                        context.close()
+                    except Exception as e:
+                        print(f"[BROWSER] Lỗi đóng context: {e}")
 
     print("\n========== HOÀN TẤT ==========")
     print(f"[MAIN] Số sản phẩm tìm thấy: {len(found_ids)}")

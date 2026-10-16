@@ -179,12 +179,30 @@ def check_challenge(page):
                 "challenge",
             ]
 
+            iframe_content_indicators = [
+                "captcha",
+                "security check",
+                "verify you are",
+                "verification",
+                "verify to continue",
+                "security verification",
+                "slide to verify",
+                "drag to verify",
+                "complete the puzzle",
+                "xác minh bảo mật",
+                "trượt để xác minh",
+            ]
+
             for i in range(iframe_count):
                 iframe = iframe_locator.nth(i)
 
                 try:
                     src = (
                         iframe.get_attribute("src") or ""
+                    ).lower()
+
+                    srcdoc = (
+                        iframe.get_attribute("srcdoc") or ""
                     ).lower()
 
                     iframe_title = (
@@ -200,6 +218,12 @@ def check_challenge(page):
                     if any(
                         keyword in iframe_title
                         for keyword in iframe_title_indicators
+                    ):
+                        return True
+
+                    if any(
+                        keyword in srcdoc 
+                        for keyword in iframe_content_indicators
                     ):
                         return True
 
@@ -266,25 +290,36 @@ def check_challenge(page):
         print(f"[CHALLENGE] Lỗi kiểm tra: {e}")
         return False
 
-def fetch_current(page):
+def fetch_current(page, timeout=10000):
     try:
         data = page.evaluate("""
-            async () => {
-                const u = new URL(location.href);
+            async (timeout) => {
+                const controller = new AbortController();
 
-                u.searchParams.set('ajax', 'true');
+                const timer = setTimeout(
+                    () => controller.abort(),
+                    timeout
+                );
+                try {
+                    const u = new URL(location.href);
 
-                const r = await fetch(u.toString(), {
-                    credentials: 'include'
-                });
+                    u.searchParams.set('ajax', 'true');
 
-                if (!r.ok) {
-                    return {};
+                    const r = await fetch(u.toString(), {
+                        credentials: 'include',
+                        signal: controller.signal
+                    });
+
+                    if (!r.ok) {
+                        return {};
+                    }
+
+                    return await r.json();
+                }finally {
+                    clearTimeout(timer);
                 }
-
-                return await r.json();
             }
-        """)
+        """,timeout,timeout=timeout + 2000)
         return (
             data.get("mods", {}).get("listItems", [])
             or []
@@ -423,7 +458,6 @@ def search_products(page, keyword, own, own_ids):
     return list(all_items.values())
 
 def search_by_ids(page, keyword, target_ids, max_pages=MAX_PAGES):
-
     target_ids = {
         str(item_id).strip()
         for item_id in target_ids
@@ -460,10 +494,12 @@ def search_by_ids(page, keyword, target_ids, max_pages=MAX_PAGES):
     page.on("response", handle_response)
 
     try:
+        check_timeout()
         page.wait_for_load_state(
             "domcontentloaded",
             timeout=30000,
         )
+        check_timeout()
         if check_challenge(page):
             return {}, True
 
@@ -473,6 +509,7 @@ def search_by_ids(page, keyword, target_ids, max_pages=MAX_PAGES):
         ).first
 
         search_box.wait_for(timeout=15000)
+        check_timeout()
         search_box.fill(keyword)
 
         # Xóa dữ liệu cũ trước khi tìm kiếm.
