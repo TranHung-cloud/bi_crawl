@@ -300,9 +300,9 @@ def fetch_current(page, timeout=10000):
                     () => controller.abort(),
                     timeout
                 );
+
                 try {
                     const u = new URL(location.href);
-
                     u.searchParams.set('ajax', 'true');
 
                     const r = await fetch(u.toString(), {
@@ -315,11 +315,13 @@ def fetch_current(page, timeout=10000):
                     }
 
                     return await r.json();
-                }finally {
+
+                } finally {
                     clearTimeout(timer);
                 }
             }
-        """,timeout,timeout=timeout + 2000)
+        """, timeout)
+
         return (
             data.get("mods", {}).get("listItems", [])
             or []
@@ -329,7 +331,6 @@ def fetch_current(page, timeout=10000):
         print(
             f"[SEARCH] Fetch dự phòng thất bại: {e}"
         )
-
         return []
 
 def collect_items(page, bucket):
