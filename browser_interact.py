@@ -494,12 +494,10 @@ def search_by_ids(page, keyword, target_ids, max_pages=MAX_PAGES):
     page.on("response", handle_response)
 
     try:
-        check_timeout()
         page.wait_for_load_state(
             "domcontentloaded",
             timeout=30000,
         )
-        check_timeout()
         if check_challenge(page):
             return {}, True
 
@@ -509,7 +507,6 @@ def search_by_ids(page, keyword, target_ids, max_pages=MAX_PAGES):
         ).first
 
         search_box.wait_for(timeout=15000)
-        check_timeout()
         search_box.fill(keyword)
 
         # Xóa dữ liệu cũ trước khi tìm kiếm.
