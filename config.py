@@ -3,7 +3,6 @@ from pathlib import Path
 import re
 from zoneinfo import ZoneInfo 
 import sys
-import os
 
 from dotenv import load_dotenv
 
