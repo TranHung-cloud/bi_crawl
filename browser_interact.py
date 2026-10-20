@@ -542,19 +542,16 @@ def search_by_ids(page, keyword, target_ids, max_pages=MAX_PAGES):
             wait_and_scroll(page, 2, 3)
 
             print(
-                f"[DEBUG] E: wait_and_scroll xong "
-                f"sau {time.monotonic() - start_time:.1f}s",
+                f"[DEBUG] E: wait_and_scroll xong ",
                 flush=True,
             )
             print("[DEBUG] F: Bắt đầu collect_items", flush=True)
-            start_time = time.monotonic()
             items, challenge_detected = collect_items(
                 page,
                 bucket,
             )
             print(
-                f"[DEBUG] G: collect_items xong "
-                f"sau {time.monotonic() - start_time:.1f}s",
+                f"[DEBUG] G: collect_items xong ",
                 flush=True,
             )
             if challenge_detected:
