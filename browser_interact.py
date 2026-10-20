@@ -523,26 +523,40 @@ def search_by_ids(page, keyword, target_ids, max_pages=MAX_PAGES):
                 f"{page_number}/{max_pages} | "
                 f"Từ khóa: {keyword}"
             )
+            print("[DEBUG] A: wait_for_load_state", flush=True)
             page.wait_for_load_state(
                 "domcontentloaded",
                 timeout=30000,
             )
+            print("[DEBUG] B: load_state OK", flush=True)
             if check_challenge(page):
+                print("[DEBUG] Phát hiện challenge", flush=True)
                 return {}, True
-
+            print("[DEBUG] C: check_challenge OK", flush=True)
             if page_number > 1:
                 bucket.clear()
 
                 if not click_next(page):
                     break
-
+            print("[DEBUG] D: Bắt đầu wait_and_scroll", flush=True)
             wait_and_scroll(page, 2, 3)
 
+            print(
+                f"[DEBUG] E: wait_and_scroll xong "
+                f"sau {time.monotonic() - start_time:.1f}s",
+                flush=True,
+            )
+            print("[DEBUG] F: Bắt đầu collect_items", flush=True)
+            start_time = time.monotonic()
             items, challenge_detected = collect_items(
                 page,
                 bucket,
             )
-
+            print(
+                f"[DEBUG] G: collect_items xong "
+                f"sau {time.monotonic() - start_time:.1f}s",
+                flush=True,
+            )
             if challenge_detected:
                 print(
                     "[SEARCH_ID] Phát hiện CAPTCHA "
