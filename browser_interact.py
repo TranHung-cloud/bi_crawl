@@ -334,12 +334,16 @@ def fetch_current(page, timeout=10000):
         return []
 
 def collect_items(page, bucket):
+    print("[collect items] Bắt đầu thu thập dữ liệu sản phẩm...")
     if wait_for_items(page, bucket, 8000):
         return list(bucket), False
+    print("[collect items] Không thu thập được dữ liệu sản phẩm, thử fetch dự phòng...")
     if check_challenge(page):
         return [], True
+    print("[collect items] Phát hiện challenge, dừng thu thập dữ liệu.")
     if wait_for_items(page, bucket, 3000):
         return list(bucket), False
+    print("[collect items] Không thu thập được dữ liệu sản phẩm, thử fetch dự phòng...")
     return fetch_current(page), False
 
 def search_products(page, keyword, own, own_ids):

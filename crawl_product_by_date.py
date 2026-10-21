@@ -4,7 +4,10 @@ from pathlib import Path
 import time
 import tempfile
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import (
+    sync_playwright,
+    TimeoutError as PlaywrightTimeoutError,
+)
 
 from config import (
     BASE_URL,
@@ -418,6 +421,8 @@ def main():
                     if context.pages
                     else context.new_page()
                 )
+                page.set_default_timeout(30000)
+                page.set_default_navigation_timeout(60000)
             # -------------------------------------------------
             # 6. Search theo ref_product
             # -------------------------------------------------
@@ -562,6 +567,9 @@ def main():
                 if captcha_detected:
                     continue
                 break
+            except PlaywrightTimeoutError as e:
+                print(f"[BROWSER] Timeout: {e}")
+                continue
             except Exception as e:
                 print(f"[BROWSER] Lỗi: {e}")
 
