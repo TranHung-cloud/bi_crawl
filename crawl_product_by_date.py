@@ -298,7 +298,7 @@ def create_browser_context(playwright, proxy):
     return playwright.chromium.launch_persistent_context(
         user_data_dir=profile_dir,
         channel="chrome",
-        headless=True,
+        headless=False,
         locale="vi-VN",
         timezone_id="Asia/Ho_Chi_Minh",
         viewport={
@@ -404,6 +404,7 @@ def main():
             crawl_date,
         )
         found_ids &= all_ids
+        name_search_flag = False
 
         while (True):
             context = None
@@ -423,70 +424,72 @@ def main():
                 )
                 page.set_default_timeout(30000)
                 page.set_default_navigation_timeout(60000)
-            # -------------------------------------------------
-            # 6. Search theo ref_product
-            # -------------------------------------------------
                 page.goto(
                     BASE_URL,
                     wait_until="domcontentloaded",
                     timeout=60000,
                 )
-                for group_index, (keyword, group) in enumerate(
-                    groups.items(),
-                    start=1,
-                ):
-                    target_ids = {
-                        product["id"]
-                        for product in group
-                    }
+            # -------------------------------------------------
+            # 6. Search theo ref_product
+            # -------------------------------------------------
+                if not name_search_flag:
+                    for group_index, (keyword, group) in enumerate(
+                        groups.items(),
+                        start=1,
+                    ):
+                        target_ids = {
+                            product["id"]
+                            for product in group
+                        }
 
-                    remaining_ids = target_ids - found_ids
-                    if not remaining_ids:
-                        print(
-                            f"[SKIP] Group đã crawl hôm nay. "
-                            f"Bỏ qua {len(target_ids)} sản phẩm."
-                        )
-                        continue
-                    print(
-                        f"\n[GROUP {group_index}/{len(groups)}] "
-                        f"{keyword}"
-                    )
-
-                    found, challenge = search_by_ids(
-                        page,
-                        keyword,
-                        remaining_ids,
-                        MAX_PAGES,
-                    )
-
-                    if challenge:
-                        print("[CHALLENGE] Phát hiện CAPTCHA.")
-                        captcha_detected = True
-                        time.sleep(300)
-                        break
-
-                    for item_id, raw_item in found.items():
-                        data = make_product_data(raw_item)
-
-                        if not data["id"]:
+                        remaining_ids = target_ids - found_ids
+                        if not remaining_ids:
+                            print(
+                                f"[SKIP] Group đã crawl hôm nay. "
+                                f"Bỏ qua {len(target_ids)} sản phẩm."
+                            )
                             continue
-
-                        update_product_history(
-                            history,
-                            data,
-                            crawl_date,
-                        )
-
-                        found_ids.add(item_id)
-
-                        save_history(history)
-
                         print(
-                            f"[SAVE] {item_id} | "
-                            f"Price={data['price']} | "
-                            f"Review={data['review']} | "
-                            f"Sold={data['sold']}"
+                            f"\n[GROUP {group_index}/{len(groups)}] "
+                            f"{keyword}"
                         )
+
+                        found, challenge = search_by_ids(
+                            page,
+                            keyword,
+                            remaining_ids,
+                            MAX_PAGES,
+                        )
+
+                        if challenge:
+                            print("[CHALLENGE] Phát hiện CAPTCHA.")
+                            captcha_detected = True
+                            time.sleep(300)
+                            break
+
+                        for item_id, raw_item in found.items():
+                            data = make_product_data(raw_item)
+
+                            if not data["id"]:
+                                continue
+
+                            update_product_history(
+                                history,
+                                data,
+                                crawl_date,
+                            )
+
+                            found_ids.add(item_id)
+
+                            save_history(history)
+
+                            print(
+                                f"[SAVE] {item_id} | "
+                                f"Price={data['price']} | "
+                                f"Review={data['review']} | "
+                                f"Sold={data['sold']}"
+                            )
+                    name_search_flag = True
 
                 if captcha_detected:
                     continue
