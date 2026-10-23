@@ -31,6 +31,7 @@ jobs:
           python -u crawl_product_by_date.py 2>&1 | tee log/app.log
 
       - name: Commit updated CSV
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
