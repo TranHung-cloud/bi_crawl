@@ -489,7 +489,7 @@ def main():
                                 f"Review={data['review']} | "
                                 f"Sold={data['sold']}"
                             )
-                    name_search_flag = True
+                name_search_flag = True
 
                 if captcha_detected:
                     continue
