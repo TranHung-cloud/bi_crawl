@@ -10,7 +10,7 @@ from config import (
 )
 
 def get_vietnam_proxies():
-    url = "https://hproxy.com/api/proxy-list"
+    url = "https://api.proxyscrape.com/v4/free-proxy-list/get"
 
     params = {
         "protocol":"http,https"
