@@ -12,7 +12,7 @@ from config import (
 def get_vietnam_proxies():
     url = (
         "https://hproxy.com/api/proxy-list"
-        "?format=json"
+        "?format=txt"
         "&country=VN"
         "&protocol=http"
         "&anonymity=elite"
