@@ -10,19 +10,21 @@ from config import (
 )
 
 def get_vietnam_proxies():
-    url = (
-        "https://api.proxyscrape.com/v4/free-proxy-list/get"
-        "?protocol=http"
-        "&timeout=3000"
-        "&country=VN"
-        "&ssl=all"
-        "&anonymity=elite"
-        "&limit=2000"
-        "&request=displayproxies"
-    )
+    url = "https://hproxy.com/api/proxy-list"
+
+    params = {
+        "format": "json",
+        "country": "VN",
+        "protocol": "http,https",
+        "anonymity": "elite",
+        "min_uptime_pct": 70,
+        "max_latency_ms": 3000,
+        "sort": "uptime",
+        "limit": 200,
+    }
 
     try:
-        response = requests.get(url, timeout=(5, 20))
+        response = requests.get(url, params=params, timeout=(5, 20))
         response.raise_for_status()
 
         proxies = []
