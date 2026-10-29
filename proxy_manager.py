@@ -13,13 +13,13 @@ def get_vietnam_proxies():
     url = "https://api.proxyscrape.com/v4/free-proxy-list/get"
 
     params = {
-        "protocol":"http,https"
-        "timeout":"3000"
-        "country":"VN"
-        "ssl":"all"
-        "anonymity":"elite"
-        "limit":"2000"
-        "request":"displayproxies"
+        "protocol":"http,https",
+        "timeout":"3000",
+        "country":"VN",
+        "ssl":"all",
+        "anonymity":"elite",
+        "limit":"2000",
+        "request":"displayproxies",
     }
 
     try:
