@@ -13,14 +13,13 @@ def get_vietnam_proxies():
     url = "https://hproxy.com/api/proxy-list"
 
     params = {
-        "format": "json",
-        "country": "VN",
-        "protocol": "http,https",
-        "anonymity": "elite",
-        "min_uptime_pct": 70,
-        "max_latency_ms": 3000,
-        "sort": "uptime",
-        "limit": 200,
+        "protocol":"http,https"
+        "timeout":"3000"
+        "country":"VN"
+        "ssl":"all"
+        "anonymity":"elite"
+        "limit":"2000"
+        "request":"displayproxies"
     }
 
     try:
