@@ -11,14 +11,14 @@ from config import (
 
 def get_vietnam_proxies():
     url = (
-        "https://hproxy.com/api/proxy-list"
-        "?format=txt"
+        "https://api.proxyscrape.com/v4/free-proxy-list/get"
+        "?protocol=http"
+        "&timeout=3000"
         "&country=VN"
-        "&protocol=http"
+        "&ssl=all"
         "&anonymity=elite"
-        "&min_uptime_pct=50"
-        "&max_latency_ms=3000"
-        "&sort=uptime"
+        "&limit=2000"
+        "&request=displayproxies"
     )
 
     try:
